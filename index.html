@@ -10,6 +10,22 @@
 <body>
     <main>
         <h1>Lista de Tarefas</h1>
+        <section id="create-todo-section">
+            <form action="" id="create-todo-form">
+                <input 
+                    type="text" 
+                    id="description" 
+                    name="description" 
+                    class="input-description"
+                    aria-label="Adicionar uma nova tarefa" 
+                    placeholder="Adicionar uma nova tarefa" 
+                    required>
+                <button type="submit" class="add-task-btn">+</button>
+            </form>
+        </section>
+        <section class="todo-list-section">
+            <ul id="todo-list"></ul>
+        </section>
     </main>
 </body>
 </html>
