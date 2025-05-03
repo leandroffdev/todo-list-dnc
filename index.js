@@ -12,6 +12,19 @@ const removeTask = (taskId) => {
     document.getElementById("todo-list")
     .removeChild(document.getElementById(taskId));
 }
+// Remove as tarefas marcadas como concluídas
+const removeDoneTasks = () => {
+    const tasksToRemove = tasks
+    .filter(({ checked }) => checked )
+    .map(({ id }) => id);
+
+    tasks = tasks.filter(({ checked }) => !checked );
+    tasksToRemove.forEach((tasksToRemove) => {
+        document.getElementById("todo-list")
+        .removeChild(document.getElementById(tasksToRemove));
+    })
+    console.log(tasksToRemove);
+}
 // Cria a tarefa na lista
 const createTaskListItem = (task, checkbox) => {
     const list = document.getElementById("todo-list");
@@ -32,7 +45,13 @@ const createTaskListItem = (task, checkbox) => {
 
     return toDo;
 }
-
+const onCheckboxClick = (event) => {
+    const [id] = event.target.id.split("-");
+    tasks = tasks.map((task) => {
+        return parseInt(task.id) === parseInt(id) ? { ...task, checked: event.target.checked } : task;
+    });
+    console.log( tasks );
+}
 // Cria a checkbox por atividade
 const getCheckboxInput = ({ id, description, checked }) => {
     const checkbox = document.createElement("input");
@@ -43,6 +62,7 @@ const getCheckboxInput = ({ id, description, checked }) => {
     checkbox.type = "checkbox";
     checkbox.id = checkboxId;
     checkbox.checked = checked || false;
+    checkbox.addEventListener("change", onCheckboxClick);
 
     label.textContent = description;
     label.htmlFor = checkboxId;
