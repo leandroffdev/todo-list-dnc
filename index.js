@@ -102,11 +102,18 @@ const getNewTaskData = (event) => {
     const description = event.target.elements.description.value;
     const id = getNewTaskId();
     return { id, description };
-} 
+}
+
+const getCreatedTaskInfo = (event) => new Promise((resolve, reject) => {
+    setTimeout(() => {
+        resolve(getNewTaskData(event));
+    }, 3000);
+})
 // Cria a tarefa
-const createTask = (event) => {
+const createTask = async (event) => {
     event.preventDefault();
-    const newTaskData = getNewTaskData(event);
+    document.getElementById("save-task").setAttribute("disabled", "true");
+    const newTaskData = await getCreatedTaskInfo(event);
     // const { id, description, checked } = newTaskData;
 
     const checkbox = getCheckboxInput(newTaskData);
@@ -119,7 +126,8 @@ const createTask = (event) => {
         checked: false }
     ];
     setTasksInLocalStorage(updatedTasks);
-    event.target.reset();
+    document.getElementById("description").value = "";
+    document.getElementById("save-task").removeAttribute("disabled");
 }
 // lista as atividades na tela
 window.onload = function() {
