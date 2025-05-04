@@ -131,5 +131,7 @@ footer {
     width: 100%;
     display: flex;
     flex-direction: row;
-    justify-content: flex-end;
+    justify-content: space-between;
+    font-size: 1.6rem;
+    align-items: center;
 }

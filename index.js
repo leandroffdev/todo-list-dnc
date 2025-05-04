@@ -1,4 +1,3 @@
-
 /** Array de tarefas
  * 
  * let tasks = [
@@ -7,7 +6,20 @@
     { id: 3, description: "fazer o almoço", checked: false },
 ]
  */
-
+const renderTasksProgressData = (tasks) => {
+    let tasksProgress;
+    const tasksProgressDOM = document.getElementById("tasks-progress");
+    if(tasksProgressDOM) tasksProgress = tasksProgressDOM;
+    else {
+        const newTasksProgressDOM = document.createElement("div");
+        newTasksProgressDOM.id = "tasks-progress";
+        document.getElementById("todo-footer").appendChild(newTasksProgressDOM);
+        tasksProgress = newTasksProgressDOM;
+    }
+    const doneTasks = tasks.filter(({ checked }) => checked).length;
+    const totalTasks = tasks.length;
+    tasksProgress.textContent = `${doneTasks}/${totalTasks} concluídas`;
+}
 // Pega as tarefas do local storage
 const getTasksFromLocalStorage = () => {
     const localTasks = JSON.parse(localStorage.getItem("tasks"));
@@ -24,6 +36,8 @@ const removeTask = (taskId) => {
         parseInt(id) !== parseInt(taskId);
     })
     setTasksInLocalStorage(updatedTasks);
+    renderTasksProgressData(updatedTasks);
+    // Remove a tarefa do DOM
     document.getElementById("todo-list")
     .removeChild(document.getElementById(taskId));
 }
@@ -36,6 +50,7 @@ const removeDoneTasks = () => {
 
     const updatedTasks = tasks.filter(({ checked }) => !checked );
     setTasksInLocalStorage(updatedTasks);
+    renderTasksProgressData(updatedTasks);
     // Remove as tarefas do DOM
     tasksToRemove.forEach((tasksToRemove) => {
         document.getElementById("todo-list")
@@ -69,6 +84,7 @@ const onCheckboxClick = (event) => {
         return parseInt(task.id) === parseInt(id) ? { ...task, checked: event.target.checked } : task;
     });
     setTasksInLocalStorage(updatedTasks);
+    renderTasksProgressData(updatedTasks);
 }
 // Cria a checkbox por atividade
 const getCheckboxInput = ({ id, description, checked }) => {
@@ -126,6 +142,8 @@ const createTask = async (event) => {
         checked: false }
     ];
     setTasksInLocalStorage(updatedTasks);
+    renderTasksProgressData(updatedTasks);
+    // Limpa o campo de texto
     document.getElementById("description").value = "";
     document.getElementById("save-task").removeAttribute("disabled");
 }
@@ -138,4 +156,7 @@ window.onload = function() {
         const checkbox = getCheckboxInput(task);
         createTaskListItem(task, checkbox);
     })
+    renderTasksProgressData(tasks);
 }
+
+// https://github.com/EscolaDnc/Projeto-Todo-list.git
