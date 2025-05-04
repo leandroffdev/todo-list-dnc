@@ -1,29 +1,46 @@
-// Array de tarefas
-let tasks = [
+
+/** Array de tarefas
+ * 
+ * let tasks = [
     { id: 1, description: "comprar pao", checked: false },
     { id: 2, description: "passear com o cachorro", checked: false },
     { id: 3, description: "fazer o almoço", checked: false },
 ]
+ */
+
+// Pega as tarefas do local storage
+const getTasksFromLocalStorage = () => {
+    const localTasks = JSON.parse(localStorage.getItem("tasks"));
+    return localTasks ? localTasks : [];
+}
+//Salva informaçoes no local storage
+const setTasksInLocalStorage = (tasks) => {
+    localStorage.setItem("tasks", JSON.stringify(tasks));
+}
 // Remove a tarefa da lista
 const removeTask = (taskId) => {
-    tasks = tasks.filter(({ id }) => {
+    const tasks = getTasksFromLocalStorage();
+    const updatedTasks = tasks.filter(({ id }) => {
         parseInt(id) !== parseInt(taskId);
     })
+    setTasksInLocalStorage(updatedTasks);
     document.getElementById("todo-list")
     .removeChild(document.getElementById(taskId));
 }
 // Remove as tarefas marcadas como concluídas
 const removeDoneTasks = () => {
+    const tasks = getTasksFromLocalStorage();
     const tasksToRemove = tasks
     .filter(({ checked }) => checked )
     .map(({ id }) => id);
 
-    tasks = tasks.filter(({ checked }) => !checked );
+    const updatedTasks = tasks.filter(({ checked }) => !checked );
+    setTasksInLocalStorage(updatedTasks);
+    // Remove as tarefas do DOM
     tasksToRemove.forEach((tasksToRemove) => {
         document.getElementById("todo-list")
         .removeChild(document.getElementById(tasksToRemove));
     })
-    console.log(tasksToRemove);
 }
 // Cria a tarefa na lista
 const createTaskListItem = (task, checkbox) => {
@@ -47,10 +64,11 @@ const createTaskListItem = (task, checkbox) => {
 }
 const onCheckboxClick = (event) => {
     const [id] = event.target.id.split("-");
-    tasks = tasks.map((task) => {
+    const tasks = getTasksFromLocalStorage();
+    const updatedTasks = tasks.map((task) => {
         return parseInt(task.id) === parseInt(id) ? { ...task, checked: event.target.checked } : task;
     });
-    console.log( tasks );
+    setTasksInLocalStorage(updatedTasks);
 }
 // Cria a checkbox por atividade
 const getCheckboxInput = ({ id, description, checked }) => {
@@ -75,6 +93,7 @@ const getCheckboxInput = ({ id, description, checked }) => {
 }
 // Pega o id da ultima tarefa e soma 1, se não existir retorna 1
 const getNewTaskId = () => {
+    const tasks = getTasksFromLocalStorage();
     const lastId = tasks[tasks.length - 1]?.id;
     return lastId ? lastId + 1 : 1;
 }
@@ -93,32 +112,22 @@ const createTask = (event) => {
     const checkbox = getCheckboxInput(newTaskData);
     createTaskListItem(newTaskData, checkbox);
 
-    tasks = [...tasks, { 
+    const tasks = getTasksFromLocalStorage();
+    const updatedTasks = [...tasks, { 
         id: newTaskData.id, 
         description: newTaskData.description, 
         checked: false }
     ];
+    setTasksInLocalStorage(updatedTasks);
+    event.target.reset();
 }
 // lista as atividades na tela
 window.onload = function() {
     const form = document.getElementById("create-todo-form");
     form.addEventListener("submit", (event) => { createTask(event) });
+    const tasks = getTasksFromLocalStorage();
     tasks.forEach((task) => {
         const checkbox = getCheckboxInput(task);
-        const list = document.getElementById("todo-list");
-        const toDo = document.createElement("li");
-        const button = document.createElement("button");
-        button.textContent = "X";
-        button.ariaLabel = "Remover tarefa";
-        button.onclick = () => {
-            removeTask(task.id);
-            console.log("Clicou")
-        };
-
-        toDo.id = task.id;
-        toDo.appendChild(checkbox);
-        toDo.appendChild(button)
-        
-        list.appendChild(toDo);
+        createTaskListItem(task, checkbox);
     })
 }
